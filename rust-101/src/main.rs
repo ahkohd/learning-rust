@@ -46,6 +46,9 @@ fn main() {
 
     learning_vectors();
     learning_sructs();
+    learning_enums();
+    learn_option_enums();
+    learn_result_enums();
 }
 
 fn sum(x: &i32, y: &i32) -> i32 {
@@ -517,3 +520,155 @@ fn learning_sructs() {
 
     print!("Distance between p1 and p2 is {}", p1.distance_to(p2));
 }
+
+fn learning_enums() {
+    // define an enum
+
+    // make this `enum` printable with `fmt::Debug`.
+    #[derive(Debug)]
+    enum KnightMove {
+        Horizontal,
+        Vertical,
+    }
+
+    // use enum
+    let horizontal_move = KnightMove::Horizontal;
+    let vertical_move = KnightMove::Vertical;
+
+    // print the enum values
+    println!("Move 1: {:?}", horizontal_move);
+    println!("Move 2: {:?}", vertical_move);
+
+    // enums with variants
+    // make this `enum` printable with `fmt::Debug`.
+    #[derive(Debug)]
+    enum KnightMove2 {
+        Horizontal(String),
+        Vertical(String),
+    }
+
+    // invoke an enum
+    let horizontal_move = KnightMove2::Horizontal("Left".to_string());
+    let vertical_move = KnightMove2::Vertical("Down".to_string());
+    // print enum
+    println!("Move 1: {:?}", horizontal_move);
+    println!("Movw 2: {:?}", vertical_move);
+
+    // enums and methods
+    #[derive(Debug)]
+    // declare an enum
+    enum TrafficSignal {
+        Red,
+        Green,
+        Yellow,
+    }
+    //implement a Traffic Signal methods
+    impl TrafficSignal {
+        // if the signal is red then return
+        fn is_stop(&self) -> bool {
+            match self {
+                TrafficSignal::Red => return true,
+                _ => return false,
+            }
+        }
+    }
+
+    // define an enum instance
+    let action = TrafficSignal::Red;
+    //print the value of action
+    println!("What is the signal value? - {:?}", action);
+    //invoke the enum method 'is_stop' and print the value
+    println!("Do we have to stop at signal? - {}", action.is_stop());
+
+    // @notes
+    // in rust enums are not limited to only one variant
+    // rust match keyword is used to match the value of an enum, and the matching must be exhaustive.
+}
+
+fn learn_option_enums() {
+    // Option is a built-in enum in the Rust standard library. It has two variants Some and None.
+    // Variants:
+    //   Some(T), returns Some value T
+    //   None, returns no value
+
+    fn learn_lang(my_lang: &str) -> Option<bool> {
+        if my_lang == "Rust" {
+            Some(true)
+        } else {
+            None
+        }
+    }
+
+    println!("{:?}", learn_lang("Rust"));
+    println!("{:?}", learn_lang("Python"));
+
+    match learn_lang("Rust") {
+        Some(x) => println!("Yelp! {}", x),
+        None => println!("Lang not rust!"),
+    }
+
+    // Example 2: Optional Variable Value# optinal variable value
+    struct Course {
+        code: i32,
+        name: String,
+        level: Option<String>,
+    }
+
+    let course1 = Course {
+        name: String::from("Rust"),
+        level: Some(String::from("beginner")),
+        code: 130,
+    };
+    let course2 = Course {
+        name: String::from("Javascript"),
+        level: None,
+        code: 122,
+    };
+
+    println!(
+        "Name:{}, Level:{} ,code: {}",
+        course1.name,
+        course1.level.unwrap_or("Level".to_string()),
+        course1.code
+    );
+    println!(
+        "Name:{}, Level:{} ,code: {}",
+        course2.name,
+        course2.level.unwrap_or("No level defined!".to_string()),
+        course2.code
+    );
+
+    // Example 3: Index Out of Bound Exception
+
+    // define a variable
+    let str = String::from("Educative");
+    // define the index value to be found
+    lookup(str, 12);
+
+    fn lookup(str: String, index: usize) {
+        let matched_index = match str.chars().nth(index) {
+            // execute if match found print the value at specified index
+            Some(c) => c.to_string(),
+            // execute if value not found
+            None => "No character at given index".to_string(),
+        };
+        println!("{}", matched_index);
+    }
+
+    // is_some(), is_none() Functions
+    fn print(my_val: Option<&str>) {
+        if my_val.is_some() {
+            // check if the value is equal to some value
+            println!("my_val is equal to some value");
+        } else {
+            println!("my_val is equal to none");
+        }
+    }
+
+    let my_val: Option<&str> = Some("Rust Programming!");
+    let my_val2: Option<&str> = None;
+    print(my_val); // invoke the function
+    print(my_val2); // invoke the function
+}
+
+fn learn_result_enums() {}
