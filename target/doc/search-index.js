@@ -1,0 +1,4 @@
+var searchIndex = JSON.parse('{\
+"rust101":{"doc":"","t":[5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],"n":["main","sum","do_some_math","do_some_logical_ops","comparison_ops","bitwise_ops","learn_borrowing","learning_conditionals","learning_simple_calculator","learning_loops","learning_functions","learning_strings","concatenate_words_starting_with_c","learning_vectors","learning_sructs","learning_enums","learn_option_enums","learn_result_enums"],"q":["rust101","","","","","","","","","","","","","","","","",""],"d":["","","","","","","","","","","","","","","","","",""],"i":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"f":[[[]],[[["i32",15]],["i32",15]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[["string",3]],["string",3]],[[]],[[]],[[]],[[]],[[]]],"p":[]}\
+}');
+initSearch(searchIndex);
