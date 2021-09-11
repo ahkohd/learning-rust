@@ -51,6 +51,12 @@ fn main() {
     learn_result_enums();
     learning_traits();
     learn_generics();
+
+    r::print_statement();
+
+    learn_boxing();
+    learn_copy_move();
+    learn_closures();
 }
 
 fn sum(x: &i32, y: &i32) -> i32 {
@@ -802,4 +808,206 @@ fn learn_generics() {
         width: 10.0,
         height: 20.0,
     };
+}
+
+// mod - declares a new module
+// pub - makes a public module
+// use - imports the module in the local scope
+
+mod r {
+
+    // private module
+    mod s {
+        fn my_private_function2() {
+            println!("Hi, I'm a private function within the module");
+
+            // super keyword refers to the parent module.
+            super::my_private_function();
+
+            // absolute reference to the parent module (root)
+            crate::r::print_statement();
+        }
+    }
+
+    fn my_private_function() {
+        println!("Hi, I'm a private function within the module");
+    }
+
+    pub fn print_statement() {
+        println!("Hi, this a function of module r");
+
+        // self keyword refers to the current module.
+        self::my_private_function();
+
+        // you can only call a function within the current module.
+        my_private_function();
+    }
+
+    pub enum KnightMove {
+        Horizontal,
+        Vertical,
+    }
+}
+
+// importing only what you need
+use r::{print_statement, KnightMove};
+
+// importing all from a module
+use r::*;
+
+fn learn_boxing() {
+    // All values in Rust are stack allocated by default. Values can be boxed (allocated on the heap) by creating a Box<T>.
+    // A box is a smart pointer to a heap allocated value of type T.
+    // When a box goes out of scope, its destructor is called, the inner object is destroyed, and the memory on the heap is freed.
+
+    struct Rectangle {
+        top_left: Point,
+        bottom_right: Point,
+    }
+    struct Point {
+        x: f64,
+        y: f64,
+    }
+
+    fn origin() -> Point {
+        Point { x: 0.0, y: 0.0 }
+    }
+
+    fn boxed_origin() -> Box<Point> {
+        // Allocate this point on the heap, and return a pointer to it
+        Box::new(Point { x: 0.0, y: 0.0 })
+    }
+
+    // (all the type annotations are superfluous)
+    // Stack allocated variables
+    let point: Point = origin();
+    let rectangle: Rectangle = Rectangle {
+        top_left: origin(),
+        bottom_right: Point { x: 3.0, y: -4.0 },
+    };
+
+    // Heap allocated rectangle
+    let boxed_rectangle: Box<Rectangle> = Box::new(Rectangle {
+        top_left: origin(),
+        bottom_right: Point { x: 3.0, y: -4.0 },
+    });
+
+    // The output of functions can be boxed
+    let boxed_point: Box<Point> = Box::new(origin());
+
+    // Double indirection
+    let box_in_a_box: Box<Box<Point>> = Box::new(boxed_origin());
+
+    use std::mem;
+
+    println!(
+        "Point occupies {} bytes on the stack",
+        mem::size_of_val(&point)
+    );
+    println!(
+        "Rectangle occupies {} bytes on the stack",
+        mem::size_of_val(&rectangle)
+    );
+
+    // box size == pointer size
+    println!(
+        "Boxed point occupies {} bytes on the stack",
+        mem::size_of_val(&boxed_point)
+    );
+    println!(
+        "Boxed rectangle occupies {} bytes on the stack",
+        mem::size_of_val(&boxed_rectangle)
+    );
+
+    println!(
+        "Boxed box occupies {} bytes on the stack",
+        mem::size_of_val(&box_in_a_box)
+    );
+
+    // Copy the data contained in `boxed_point` into `unboxed_point`
+    let unboxed_point: Point = *boxed_point;
+    println!(
+        "Unboxed point occupies {} bytes on the stack",
+        mem::size_of_val(&unboxed_point)
+    );
+}
+
+fn learn_copy_move() {
+    // Three Rules of Ownership
+    // 1. Each value has a variable binding called its owner.
+    // 2. There can only be one owner at a time.
+    // 3. When the owner goes out of scope, the value will be dropped - When the variable goes out of scope, Rust calls function drop automatically at the closing curly bracket (to deallocate the memory).
+
+    // Copying a value is a shallow copy - the data is copied but the ownership is not.
+    // This means that the data is copied but the variable that holds the data is not.
+
+    // 1. Variable assignment in case of primitive data type is a copy type.
+    let x = 5;
+    let y = x;
+    println!("x:{} , y:{}", x, y);
+
+    // Moved Type
+    // 1. Variable assignment in case of Non-primitive types such as String Object and Vectors is a moved type.
+
+    // let a = String::from("Rust");
+    // let b = a; // moves value of 'a' to 'b'
+    // eprintln!("a:{} , b:{}", a, b); // Error use of moved value 'a'
+
+    let mut a = String::from("Rust"); // define a String and save in 'a'
+    let b = a.clone(); // b clones a
+    a.push('y');
+    println!("a:{} , b:{}", a, b);
+
+    // Passing Values to a Function
+
+    // The ownership of the variable is
+    //  1. Copied if the value is a primitive data type so the variable can be reused after the function call
+    //  2. Moved if the value is a non-primitive data type so the value becomes inaccessible after the function call
+    //  3. Returning values from a function transfer the ownership to the caller function.
+
+    let str = String::from("Rust"); // str comes into scope
+                                    // str is a move type
+
+    pass_string_object(str); // str's value moves into the function...
+                             // ... and becomes in accessible here
+                             //println!("{}" , str);         // This line will give an error
+
+    let my_int = 10; // my_int comes into scope
+
+    pass_integer(my_int); // my_int value is a copy into the function,
+                          // but i32 is a copy type, so can my used
+                          // use my_int if desired
+
+    fn pass_string_object(my_string: String) {
+        // my_string comes into scope
+        println!("{}", my_string);
+    } // Here, my_string goes out of scope and `drop` frees the memory
+
+    fn pass_integer(my_integer: i32) {
+        // my_integer comes into scope
+        println!("{}", my_integer);
+    } // Here, my_integer goes out of scope
+}
+
+fn learn_closures() {
+    // Closures are anonymous functions that can capture their environment.
+
+    let x = |a: i32, b: i32| a + b;
+
+    let y = |a: i32, b: i32| {
+        let res = a - b;
+        println!("{}", res)
+    };
+
+    let z = || println!("Hello world!");
+
+    // move keyword is used to move the ownership of a variable to a closure.
+    // beacuse closures do not automatically capture variables, they must be moved into the closure.
+
+    let s = "Hello world".to_string();
+
+    // move s into closure
+    let print = move |s: String| println!("{}", s);
+    print(s);
+    // println!("{}", s); // Error: s is not valid here, it is already moved
 }
