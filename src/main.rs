@@ -961,8 +961,8 @@ fn learn_copy_move() {
     // Passing Values to a Function
 
     // The ownership of the variable is
-    //  1. Copied if the value is a primitive data type so the variable can be reused after the function call
-    //  2. Moved if the value is a non-primitive data type so the value becomes inaccessible after the function call
+    //  1. Copied, if the value is a primitive data type so the variable can be reused after the function call
+    //  2. Moved, if the value is a non-primitive data type so the value becomes inaccessible after the function call
     //  3. Returning values from a function transfer the ownership to the caller function.
 
     let str = String::from("Rust"); // str comes into scope
