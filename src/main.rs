@@ -49,6 +49,8 @@ fn main() {
     learning_enums();
     learn_option_enums();
     learn_result_enums();
+    learning_traits();
+    learn_generics();
 }
 
 fn sum(x: &i32, y: &i32) -> i32 {
@@ -671,4 +673,133 @@ fn learn_option_enums() {
     print(my_val2); // invoke the function
 }
 
-fn learn_result_enums() {}
+fn learn_result_enums() {
+    use rand::Rng;
+
+    // Result is a built-in enum in the Rust standard library. It has two variants Ok(T) and Err(E).
+    // Variants:
+    // Ok(T), returns the success statement of type T
+    // Err, returns the error statement of type E.
+
+    fn file_exists() -> Result<bool, bool> {
+        return if rand::thread_rng().gen_bool(1.0 / 2.0) {
+            Ok(true)
+        } else {
+            Err(false)
+        };
+    }
+
+    match file_exists() {
+        Ok(x) => println!("File exists! {}", x),
+        Err(x) => println!("File not found! {}", x),
+    }
+
+    fn divisible_by_3(i: i32) -> Result<String, String> {
+        if i % 3 == 0 {
+            // if number mod 3 equals 0
+            Ok("Given number is divisible by 3".to_string()) // return this statement
+        } else {
+            // if if number mod 3 is not equals 0
+            Err("Given number is not divisible by 3".to_string()) // return this statement
+        }
+    }
+
+    println!("{:?}", divisible_by_3(6)); // invoke function by passing a number 6
+    println!("{:?}", divisible_by_3(2));
+
+    // is_ok(), is_err() Functions
+
+    let check1 = divisible_by_3(6);
+    if check1.is_ok() {
+        // check if the function returns ok
+        println!("The number is divisible by 3");
+    } else {
+        println!("The number is not divisible by 3");
+    }
+
+    enum Days {
+        Monday,
+        Tuesday,
+        Wednesday,
+        Thursday,
+        Friday,
+        Saturday,
+        Sunday,
+    }
+
+    impl Days {
+        fn is_weekend(&self) -> i32 {
+            match self {
+                Days::Saturday | Days::Sunday => 1,
+                _ => 0,
+            }
+        }
+    }
+
+    println!("{}", Days::Saturday.is_weekend());
+}
+
+fn learning_traits() {
+    // Traits are a way to define behavior for a type.
+    // They are like interfaces but not limited to interfaces.
+    // There can be two types of methods in traits
+    // Concrete Method
+    // The method that has a body meaning that implementation of the method is done within the method.
+    //
+    // Abstract Method
+    // The method that does not have a body meaning that implementation of the method is done by each struct in its own impl construct.
+
+    //declare a structure
+    struct Circle {
+        radius: f32,
+    }
+    struct Rectangle {
+        width: f32,
+        height: f32,
+    }
+
+    //declare a trait
+    trait Area {
+        fn shape_area(&self) -> f32;
+    }
+
+    //implement the trait
+    impl Area for Circle {
+        fn shape_area(&self) -> f32 {
+            3.13 * self.radius * self.radius
+        }
+    }
+
+    impl Area for Rectangle {
+        fn shape_area(&self) -> f32 {
+            self.width * self.height
+        }
+    }
+
+    //create an instance of the structure
+    let c = Circle { radius: 2.0 };
+    let r = Rectangle {
+        width: 2.0,
+        height: 2.0,
+    };
+    println!("Area of Circle: {}", c.shape_area());
+    println!("Area of Rectangle:{}", r.shape_area());
+}
+
+fn learn_generics() {
+    fn test_generic<T>(x: T) -> T {
+        x
+    }
+
+    println!("{}", test_generic::<i32>(10));
+
+    struct Rect<T> {
+        width: T,
+        height: T,
+    }
+
+    let r: Rect<f32> = Rect {
+        width: 10.0,
+        height: 20.0,
+    };
+}
