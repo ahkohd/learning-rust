@@ -763,7 +763,7 @@ fn learning_traits() {
         fn shape_area(&self) -> f32;
     }
 
-    //implement the trait
+    //implement the trait for the structure
     impl Area for Circle {
         fn shape_area(&self) -> f32 {
             3.13 * self.radius * self.radius
